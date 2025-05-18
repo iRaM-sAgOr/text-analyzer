@@ -1,0 +1,16 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - MONGO_URL=mongodb://<username>:<password>@<mongo_db_app_name>:<port>/<db_name>?authSource=admin
+    networks:
+      - mongo_db_network
+
+networks:
+  mongo_db_network:
+    driver: bridge

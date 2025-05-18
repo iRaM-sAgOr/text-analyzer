@@ -71,6 +71,25 @@ You can run the application in a Docker container:
 docker-compose up
 ```
 
+### Running MongoDB in Docker
+
+To start a MongoDB container with a custom database, user, password, port, and Docker network:
+
+```bash
+docker network create text-analyzer-net
+
+docker run -d \
+  --name mongo_db \
+  --network text-analyzer-net \
+  -e MONGO_INITDB_DATABASE=your_db_name \
+  -e MONGO_INITDB_ROOT_USERNAME=your_user \
+  -e MONGO_INITDB_ROOT_PASSWORD=your_password \
+  -p 27017:27017 \
+  mongo:latest
+```
+
+Replace `your_db_name`, `your_user`, and `your_password` with your desired values.
+
 ## License
 
 MIT

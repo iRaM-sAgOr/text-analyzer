@@ -1,7 +1,15 @@
 import express, { Application } from 'express';
+import { connectDB } from './config/database';
+import { errorHandler } from './middelware/error.middleware';
 
 export const createApp = async (): Promise<Application> => {
     const app = express();
+
+    await connectDB();
+
     app.use(express.json());
+
+    app.use(errorHandler)
+
     return app;
 }
