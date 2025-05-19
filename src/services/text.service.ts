@@ -1,5 +1,4 @@
 import { ITextRepository } from "../repositories/Itext.repository";
-import { createTextSchema } from "../api/dtos/text.dto";
 import { IText } from "../interfaces/text.interface";
 import { TextAnalyzer } from "../utils/text.analyzer";
 
@@ -10,10 +9,9 @@ export class TextService {
         this.textRepository = textRepository;
     }
 
-    async createText(dto: { content: string }, userId: string): Promise<IText> {
-        createTextSchema.parse(dto);
+    async createText(content: string, userId: string): Promise<IText> {
         const text: IText = {
-            content: dto.content,
+            content,
             userId,
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -71,8 +69,7 @@ export class TextService {
         return longestWords;
     }
 
-    async updateText(id: string, dto: { content: string }, userId: string): Promise<IText> {
-        createTextSchema.parse(dto);
+    async updateText(id: string, content: string, userId: string): Promise<IText> {
         const text = await this.textRepository.getTextById(id);
         if (!text || text.userId !== userId) {
             throw new Error("Text not found or user not authorized");
@@ -80,7 +77,7 @@ export class TextService {
 
         const updatedText: IText = {
             ...text,
-            content: dto.content,
+            content,
             updatedAt: new Date(),
         }
         const result = await this.textRepository.updateText(id, updatedText);
