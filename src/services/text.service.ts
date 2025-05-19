@@ -3,6 +3,7 @@ import { IText } from "../interfaces/text.interface";
 import { TextAnalyzer } from "../utils/text.analyzer";
 import { AppError } from "../middelware/error.middleware";
 import { cache } from "../utils/cache";
+import logger from "../utils/logger";
 
 export class TextService {
     private textRepository: ITextRepository;
@@ -20,6 +21,7 @@ export class TextService {
         }
         const createdText = this.textRepository.createText(text)
         await cache.del(`report:${userId}`);
+        logger.info('Text created', {userId, textId: (await createdText)._id});
         return createdText;
     }
 
@@ -28,17 +30,20 @@ export class TextService {
         const cacheKey = `wordCount:${userId}:${id}`;
         const cachedCount = await cache.get(cacheKey);
         if (cachedCount) {
+            logger.info('Word count from cache', { userId, textId: id, wordCount: parseInt(cachedCount, 10) });
             return parseInt(cachedCount, 10);
         }
 
         // if not found in cache, get from database
         const text = await this.textRepository.getTextById(id);
         if (!text || text.userId !== userId) {
+            logger.error('Text not found or unauthorized', { userId, textId: id });
             throw new AppError("Text not found or user not authorized", 404);
         }
 
         const count = TextAnalyzer.countWords(text.content);
         await cache.set(cacheKey, count.toString(), 60 * 60); // cache for 1 hour
+        logger.info('Word count calculated', { userId, textId: id, wordCount: count });
         return count;
     }
 
