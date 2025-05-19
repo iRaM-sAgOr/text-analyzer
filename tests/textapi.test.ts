@@ -6,6 +6,7 @@ import 'dotenv/config';
 
 describe('Text API', () => {
   let app: Application;
+  let textId: string;
 
   beforeAll(async () => {
     app = await createApp();
@@ -14,8 +15,6 @@ describe('Text API', () => {
   afterAll(async () => {
     await mongoose.connection.close();
   });
-
-  let textId: string;
 
   beforeEach(async () => {
     const response = await request(app)
@@ -51,4 +50,61 @@ describe('Text API', () => {
     );
   });
 
+  it('GET /api/texts/:id/word-count should return correct word count', async () => {
+    const response = await request(app)
+      .get(`/api/texts/${textId}/word-count`);
+    expect(response.status).toBe(200);
+    expect(response.body.data).toHaveProperty('wordCount');
+    expect(typeof response.body.data.wordCount).toBe('number');
+    expect(response.body.data.wordCount).toBe(16);
+  });
+
+  it('GET /api/texts/:id/character-count should return correct character count without space', async () => {
+    const response = await request(app)
+      .get(`/api/texts/${textId}/character-count`);
+    expect(response.status).toBe(200);
+    expect(response.body.data).toHaveProperty('characterCount');
+    expect(typeof response.body.data.characterCount).toBe('number');
+    expect(response.body.data.characterCount).toBe(60);
+  });
+
+  it('GET /api/texts/:id/sentence-count should return correct sentence count', async () => {
+    const response = await request(app)
+      .get(`/api/texts/${textId}/sentence-count`);
+    expect(response.status).toBe(200);
+    expect(response.body.data).toHaveProperty('sentenceCount');
+    expect(typeof response.body.data.sentenceCount).toBe('number');
+    expect(response.body.data.sentenceCount).toBe(2);
+  });
+
+  it('GET /api/texts/:id/paragraph-count should return correct paragraph count', async () => {
+    const response = await request(app)
+      .get(`/api/texts/${textId}/paragraph-count`);
+    expect(response.status).toBe(200);
+    expect(response.body.data).toHaveProperty('paragraphCount');
+    expect(typeof response.body.data.paragraphCount).toBe('number');
+    expect(response.body.data.paragraphCount).toBe(1);
+  });
+
+  it('GET /api/texts/:id/longest-words should return the longest words', async () => {
+    const response = await request(app)
+      .get(`/api/texts/${textId}/longest-words`);
+    expect(response.status).toBe(200);
+    expect(response.body.data).toHaveProperty('longestWords');
+    expect(Array.isArray(response.body.data.longestWords)).toBe(false);
+    expect(response.body.data.longestWords.length).toBeGreaterThan(0);
+  });
+
+  it('GET /api/texts/:id/word-count should return 400 for invalid id', async () => {
+    const response = await request(app)
+      .get('/api/texts/invalidid/word-count');
+    expect(response.status).toBe(400);
+  });
+
+  it('GET /api/texts/:id/word-count should return 404 for non-existent id', async () => {
+    const nonExistentId = '507f1f77bcf86cd799439011';
+    const response = await request(app)
+      .get(`/api/texts/${nonExistentId}/word-count`);
+    expect([404, 400]).toContain(response.status);
+  });
 });

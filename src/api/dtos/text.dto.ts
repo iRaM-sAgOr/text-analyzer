@@ -25,8 +25,9 @@ export const analysisResponseSchema = z.object({
     characterCount: z.number().optional(),
     sentenceCount: z.number().optional(),
     paragraphCount: z.number().optional(),
-    longestWords: z.array(z.string()).optional(),
+    longestWords: z.union([z.string(), z.array(z.string())]).optional(),
   }),
+  message: z.string().optional(),
 });
 
 export const userTextsResponseSchema = z.object({
@@ -37,7 +38,6 @@ export const userTextsResponseSchema = z.object({
       userId: z.string(),
       createdAt: z.date().transform((val) => val.toISOString()),
       updatedAt: z.date().transform((val) => val.toISOString()),
-      __v: z.number().optional(),
     })
   ),
 });

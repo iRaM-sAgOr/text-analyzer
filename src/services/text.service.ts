@@ -1,6 +1,7 @@
 import { ITextRepository } from "../repositories/Itext.repository";
 import { IText } from "../interfaces/text.interface";
 import { TextAnalyzer } from "../utils/text.analyzer";
+import { AppError } from "../middelware/error.middleware";
 
 export class TextService {
     private textRepository: ITextRepository;
@@ -22,7 +23,7 @@ export class TextService {
     async getWordCount(id: string, userId: string): Promise<number> {
         const text = await this.textRepository.getTextById(id);
         if (!text || text.userId !== userId) {
-            throw new Error("Text not found or user not authorized");
+            throw new AppError("Text not found or user not authorized", 404);
         }
 
         const count = TextAnalyzer.countWords(text.content);
@@ -32,7 +33,7 @@ export class TextService {
     async getCharacterCount(id: string, userId: string, countWhitespace: boolean = false): Promise<number> {
         const text = await this.textRepository.getTextById(id);
         if (!text || text.userId !== userId) {
-            throw new Error("Text not found or user not authorized");
+            throw new AppError("Text not found or user not authorized", 404);
         }
 
         const count = TextAnalyzer.countCharacters(text.content, countWhitespace);
@@ -42,7 +43,7 @@ export class TextService {
     async getSentenceCount(id: string, userId: string): Promise<number> {
         const text = await this.textRepository.getTextById(id);
         if (!text || text.userId !== userId) {
-            throw new Error("Text not found or user not authorized");
+            throw new AppError("Text not found or user not authorized", 404);
         }
 
         const count = TextAnalyzer.countSentences(text.content);
@@ -52,7 +53,7 @@ export class TextService {
     async getParagraphCount(id: string, userId: string): Promise<number> {
         const text = await this.textRepository.getTextById(id);
         if (!text || text.userId !== userId) {
-            throw new Error("Text not found or user not authorized");
+            throw new AppError("Text not found or user not authorized", 404);
         }
 
         const count = TextAnalyzer.countParagraphs(text.content);
@@ -62,7 +63,7 @@ export class TextService {
     async getLongestWords(id: string, userId: string, returnAll: boolean = false): Promise<string | string[]> {
         const text = await this.textRepository.getTextById(id);
         if (!text || text.userId !== userId) {
-            throw new Error("Text not found or user not authorized");
+            throw new AppError("Text not found or user not authorized", 404);
         }
 
         const longestWords = TextAnalyzer.findLongestWords(text.content, returnAll);
@@ -72,7 +73,7 @@ export class TextService {
     async updateText(id: string, content: string, userId: string): Promise<IText> {
         const text = await this.textRepository.getTextById(id);
         if (!text || text.userId !== userId) {
-            throw new Error("Text not found or user not authorized");
+            throw new AppError("Text not found or user not authorized", 404);
         }
 
         const updatedText: IText = {
@@ -90,7 +91,7 @@ export class TextService {
     async deleteText(id: string, userId: string): Promise<boolean> {
         const text = await this.textRepository.getTextById(id);
         if (!text || text.userId !== userId) {
-            throw new Error("Text not found or user not authorized");
+            throw new AppError("Text not found or user not authorized", 404);
         }
 
         const result = await this.textRepository.deleteText(id);
@@ -100,7 +101,7 @@ export class TextService {
     async getTextByUserId(userId: string): Promise<IText[]> {
         const texts = await this.textRepository.getTextByUserId(userId);
         if (!texts) {
-            throw new Error("No texts found for this user");
+            throw new AppError("No texts found for this user", 404);
         }
         return texts;
     }
