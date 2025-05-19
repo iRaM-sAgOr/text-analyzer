@@ -108,3 +108,35 @@ describe('Text API', () => {
     expect([404, 400]).toContain(response.status);
   });
 });
+
+// throttling UT
+describe('Throttling Middleware',()=>{
+  let app: Application;
+  let textId: string;
+
+  beforeAll(async () => {
+    app = await createApp();
+  });
+
+  afterAll(async () => {
+    await mongoose.connection.close();
+  });
+
+  beforeEach(async () => {
+    const response = await request(app)
+      .post('/api/texts')
+      .send({ content: 'The quick brown fox jumps over the lazy dog. The lazy dog slept in the sun.' });
+    textId = response.body.data._id;
+  });
+
+  it('GET /api/texts/:id/word-count return 429 after 100 hits', async () => {
+    for (let i = 0; i < 100; i++) {
+      await request(app)
+        .get(`/api/texts/${textId}/word-count`);
+    }
+    const response = await request(app)
+      .get(`/api/texts/${textId}/word-count`);
+    expect(response.status).toBe(429);
+    expect(response.body.message).toContain('Too many requests, please try again later.');
+  });
+})
