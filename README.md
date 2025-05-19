@@ -71,7 +71,7 @@ You can run the application in a Docker container:
 docker-compose up
 ```
 
-### Running MongoDB in Docker
+### Running MongoDB in Docker in separate container
 
 To start a MongoDB container with a custom database, user, password, port, and Docker network:
 
@@ -89,6 +89,10 @@ docker run -d \
 ```
 
 Replace `your_db_name`, `your_user`, and `your_password` with your desired values.
+
+### Running Redis in Docker in separate container
+```bash
+docker run --name redis --network text-analyzer-net -p 6379:6379 -d redis:latest
 
 ## License
 

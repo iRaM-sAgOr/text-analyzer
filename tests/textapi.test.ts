@@ -2,7 +2,17 @@ import request from 'supertest';
 import mongoose from 'mongoose';
 import { Application } from 'express';
 import { createApp } from '../src/app';
+import { cache } from '../src/utils/cache';
 import 'dotenv/config';
+
+jest.mock('../src/utils/cache', () => ({
+  cache: {
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn(),
+    quit: jest.fn(),
+  },
+}));
 
 describe('Text API', () => {
   let app: Application;
@@ -14,6 +24,8 @@ describe('Text API', () => {
 
   afterAll(async () => {
     await mongoose.connection.close();
+    await cache.quit();
+    jest.clearAllMocks();
   });
 
   beforeEach(async () => {
@@ -110,7 +122,7 @@ describe('Text API', () => {
 });
 
 // throttling UT
-describe('Throttling Middleware',()=>{
+describe('Throttling Middleware', () => {
   let app: Application;
   let textId: string;
 

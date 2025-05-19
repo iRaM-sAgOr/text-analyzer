@@ -8,9 +8,18 @@ services:
     environment:
       - NODE_ENV=development
       - MONGO_URL=mongodb://<username>:<password>@<mongo_db_app_name>:<port>/<db_name>?authSource=admin
+      - REDIS_URL=redis://redis:6379
     networks:
-      - mongo_db_network
+      - text-analyzer-net
+    depends_on:
+      - redis
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - text-analyzer-net
 
 networks:
-  mongo_db_network:
+  text-analyzer-net:
     driver: bridge

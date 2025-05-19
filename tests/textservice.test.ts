@@ -2,9 +2,18 @@ import { TextService } from "../src/services/text.service";
 import { ITextRepository } from "../src/repositories/Itext.repository";
 import { IText } from "../src/interfaces/text.interface";
 import { TextAnalyzer } from "../src/utils/text.analyzer";
+import { cache } from "../src/utils/cache";
+
+jest.mock('../src/utils/cache', () => ({
+    cache: {
+        get: jest.fn(),
+        set: jest.fn(),
+        del: jest.fn(),
+        quit: jest.fn(),
+    },
+}));
 
 // Do NOT mock TextAnalyzer. Only mock the repository.
-
 const mockText: IText = {
     content: "Hello world. This is a test.\n\nNew paragraph.",
     userId: "user1",
@@ -20,12 +29,16 @@ const mockRepository = {
     getTextByUserId: jest.fn(),
 } as unknown as ITextRepository;
 
-describe("TextService", () => {
+describe("Text Service", () => {
     let service: TextService;
 
     beforeEach(() => {
         jest.clearAllMocks();
         service = new TextService(mockRepository);
+    });
+
+    afterAll(async () => {
+        await cache.quit();
     });
 
     describe("createText", () => {
