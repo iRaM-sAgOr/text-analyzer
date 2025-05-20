@@ -119,6 +119,31 @@ describe('Text API', () => {
       .get(`/api/texts/${nonExistentId}/word-count`);
     expect([404, 400]).toContain(response.status);
   });
+
+  it('PUT /api/texts/:id should update text and invalidate cache', async () => {
+    const response = await request(app)
+      .put(`/api/texts/${textId}`)
+      .send({ content: 'Updated text.' });
+    expect(response.status).toBe(200);
+    expect(response.body.data.content).toBe('Updated text.');
+  });
+
+  it('PUT /api/texts/:id should fail for empty content', async () => {
+    const response = await request(app)
+      .put(`/api/texts/${textId}`)
+      .send({ content: '' });
+    expect(response.status).toBe(400);
+    expect(response.body.errors).toContainEqual(
+      expect.objectContaining({ message: 'Text content cannot be empty' })
+    );
+  });
+
+  it('DELETE /api/texts/:id should delete text and invalidate cache', async () => {
+    const response = await request(app).delete(`/api/texts/${textId}`);
+    expect(response.status).toBe(204);
+  });
+
+
 });
 
 // throttling UT

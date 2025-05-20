@@ -13,6 +13,11 @@ jest.mock('../src/utils/cache', () => ({
     },
 }));
 
+jest.mock('../src/utils/logger', () => ({
+  info: jest.fn(),
+  error: jest.fn(),
+}));
+
 // Do NOT mock TextAnalyzer. Only mock the repository.
 const mockText: IText = {
     content: "Hello world. This is a test.\n\nNew paragraph.",

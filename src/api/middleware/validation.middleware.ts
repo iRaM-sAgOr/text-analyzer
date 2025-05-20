@@ -4,7 +4,8 @@ import { ZodSchema, ZodError } from 'zod';
 export const validateRequest = (schema: ZodSchema, source: 'body' | 'params' = 'body') => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
-      schema.parse(req[source]);
+      // schema.parse(req[source]);
+      schema.parse({ ...req.body, ...req.params });
       next();
     } catch (error) {
       if (error instanceof ZodError) {
@@ -14,6 +15,7 @@ export const validateRequest = (schema: ZodSchema, source: 'body' | 'params' = '
             path: err.path.join('.'),
             message: err.message,
           })),
+          issue: error.errors
         });
       } else {
         next(error);

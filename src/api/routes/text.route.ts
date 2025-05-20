@@ -18,8 +18,7 @@ router.post(
     validateRequest(createTextSchema),
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         await textController.createText(req, res, next);
-    }
-);
+    });
 
 
 router.get('/:id/word-count', validateRequest(textIdSchema, 'params'),
@@ -47,6 +46,16 @@ router.get('/:id/longest-words', validateRequest(textIdSchema, 'params'),
         await textController.getLongestWords(req, res, next);
     });
 
+router.put('/:id', validateRequest(createTextSchema.merge(textIdSchema)),
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        await textController.updateText(req, res, next);
+    }
+);
+
+router.delete('/:id', validateRequest(textIdSchema, 'params'),
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        await textController.deleteText(req, res, next);
+    });
 
 
 
