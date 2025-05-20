@@ -11,7 +11,7 @@ export class TextController {
 
     async createText(req: Request, res: Response, next: NextFunction) {
         try {
-            const userId = '10'; // Replace with actual user ID from request context
+            const userId = req.body.userId; // Get userId from request body
             const text = await this.textService.createText(req.body.content, userId);
             const response = textResponseSchema.parse({
                 data: text,
@@ -26,7 +26,7 @@ export class TextController {
     async getWordCount(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const userId = '10'; // Replace with actual user ID from request context
+            const userId = req.query.userId as string; // Get userId from query params
             const count = await this.textService.getWordCount(id, userId);
             const response = analysisResponseSchema.parse({ data: { wordCount: count } });
             res.status(200).json(response);
@@ -38,7 +38,7 @@ export class TextController {
     async getCharacterCount(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const userId = '10'; // Replace with actual user ID from request context
+            const userId = req.query.userId as string; // Get userId from query params
             const count = await this.textService.getCharacterCount(id, userId);
             const response = analysisResponseSchema.parse({ data: { characterCount: count } });
             res.status(200).json(response);
@@ -50,7 +50,7 @@ export class TextController {
     async getSentenceCount(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const userId = '10'; // Replace with actual user ID from request context
+            const userId = req.query.userId as string; // Get userId from query params
             const count = await this.textService.getSentenceCount(id, userId);
             const response = analysisResponseSchema.parse({ data: { sentenceCount: count } });
             res.status(200).json(response);
@@ -62,7 +62,7 @@ export class TextController {
     async getParagraphCount(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const userId = '10'; // Replace with actual user ID from request context
+            const userId = req.query.userId as string; // Get userId from query params
             const count = await this.textService.getParagraphCount(id, userId);
             const response = analysisResponseSchema.parse({ data: { paragraphCount: count } });
             res.status(200).json(response);
@@ -74,7 +74,7 @@ export class TextController {
     async getLongestWords(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const userId = '10'; // Replace with actual user ID from request context
+            const userId = req.query.userId as string; // Get userId from query params
             const returnAll = (req.query.returnAll && true) || false;
             const longestWords = await this.textService.getLongestWords(id, userId, returnAll);
             const response = analysisResponseSchema.parse({ data: { longestWords } });
@@ -87,7 +87,7 @@ export class TextController {
     async updateText(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const userId = '10'; // Replace with actual user ID from request context
+            const userId = req.body.userId; // Get userId from request body
             const updatedText = await this.textService.updateText(id, req.body.content, userId);
             const response = textResponseSchema.parse({ data: updatedText });
             res.status(200).json(response);
@@ -99,7 +99,7 @@ export class TextController {
     async deleteText(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const userId = '10'; // Replace with actual user ID from request context
+            const userId = req.query.userId as string; // Get userId from query params
             await this.textService.deleteText(id, userId);
             res.status(204).send();
         } catch (error) {
@@ -109,7 +109,7 @@ export class TextController {
 
     async getUserTexts(req: Request, res: Response, next: NextFunction) {
         try {
-            const userId = '10'; // Replace with actual user ID from request context
+            const userId = req.query.userId as string; // Get userId from query params
             const texts = await this.textService.getTextByUserId(userId);
             const response = userTextsResponseSchema.parse({ data: texts });
             res.status(200).json(response);

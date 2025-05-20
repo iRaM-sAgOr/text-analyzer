@@ -22,7 +22,7 @@ const swaggerOptions = {
             },
         ],
     },
-    apis: ["./src/routes/*.ts"],
+    apis: ["./src/api/routes/*.ts", "./dist/api/routes/*.js"],
 };
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
 

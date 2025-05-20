@@ -9,6 +9,10 @@ services:
       - NODE_ENV=development
       - MONGO_URL=mongodb://root:example@mongo_db:27017/text_analyzer_db?authSource=admin
       - REDIS_URL=redis://redis:6379
+      - KEYCLOAK_URL=http://keycloak:8080
+      - KEYCLOAK_REALM=text-analyzer
+      - KEYCLOAK_CLIENT_ID=backend-client
+      - KEYCLOAK_CLIENT_SECRET=TZmo4EhwYBnfR0ZWfZxWALeAyimG1eVN
     networks:
       - text-analyzer-net
     depends_on:
@@ -64,6 +68,31 @@ services:
     depends_on:
       - loki
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.5
+    environment:
+      - DB_VENDOR=postgres
+      - DB_ADDR=postgres
+      - DB_DATABASE=keycloak
+      - DB_USER=keycloak
+      - DB_PASSWORD=password
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    ports:
+      - '8080:8080'
+    command: start-dev
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=keycloak
+      - POSTGRES_USER=keycloak
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
 networks:
   text-analyzer-net:
     driver: bridge
@@ -73,3 +102,4 @@ volumes:
   mongo_data:
   loki_data:
   grafana_data:
+  postgres_data:
