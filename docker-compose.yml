@@ -7,12 +7,13 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
-      - MONGO_URL=mongodb://<username>:<password>@<mongo_db_app_name>:<port>/<db_name>?authSource=admin
+      - MONGO_URL=mongodb://root:example@mongo_db:27017/text_analyzer_db?authSource=admin
       - REDIS_URL=redis://redis:6379
     networks:
       - text-analyzer-net
     depends_on:
       - redis
+      - mongo_db
 
   redis:
     image: redis:latest
@@ -22,6 +23,20 @@ services:
       - text-analyzer-net
     volumes:
       - redis_data:/data
+
+  mongo_db:
+    image: mongo:latest
+    container_name: mongo_db
+    environment:
+      - MONGO_INITDB_DATABASE=text_analyzer_db
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+    ports:
+      - "27017:27017"
+    networks:
+      - text-analyzer-net
+    volumes:
+      - mongo_data:/data/db
 
   loki:
     image: grafana/loki:2.9.2
@@ -55,5 +70,6 @@ networks:
 
 volumes:
   redis_data:
+  mongo_data:
   loki_data:
   grafana_data:
